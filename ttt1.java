@@ -1,3 +1,4 @@
+
 import java.util.*;
 class game
 {
@@ -14,7 +15,7 @@ class game
         {
             for(int j=0;j<3;j++)
                 System.out.print(bd[i][j]+" ");
-             System.out.println("");
+            System.out.println("");
         }
 
 
@@ -40,7 +41,7 @@ class game
 
         }
     }
-    public void type(int x,int y)
+    public void type(int x,int y,int q)
     {
         if(x<0||y<0||x>2||y>2)
         {
@@ -49,9 +50,18 @@ class game
         }
         if(bd[x][y]!=0)
         {
-            System.out.println("chose another position");
-            return;
+            if(q==1)
+            {
+                System.out.println("chose another position");
+                return;
+            }
+            else
+            {
+                return;
+            }
         }
+        if(z==-1)
+            System.out.println("computer choose "+x+" "+y);
         bd[x][y]=z;
         if(z==1)
             z=-1;
@@ -61,27 +71,38 @@ class game
 
 }
 public class Main
-        {
-       public static void main(String args[])
-        {
+{
+    public static void main(String args[])
+    {
+        System.out.println("1. GAME BETWEEN TWO HUMANS");
+        System.out.println("2. GAME BETWEEN COMPUTER");
         Scanner s=new Scanner(System.in);
         game g=new game();
-        int x=0,y=0;
+        Random r=new Random();
+        int x=0,y=0,q=0;
+        q=s.nextInt();
         while(!g.comp)
         {
-        if(g.z==1)
-        System.out.println("persom a turn");
-        else
-        System.out.println("person b turn");
-        x=s.nextInt();
-        y=s.nextInt();
-        g.type(x,y);
-        g.display();
-        g.whowins();
+            if(g.z==1)
+                System.out.println("persom a turn");
+            else
+                System.out.println("person b turn");
+            if(g.z==1)
+            {
+                x=s.nextInt();
+                y=s.nextInt();
+            }else
+            {
+                x=r.nextInt(3);
+                y=r.nextInt(3);
+            }
+            g.type(x,y,q);
+            g.display();
+            g.whowins();
 
         }
 
 
 
-        }
-        }
+    }
+}
