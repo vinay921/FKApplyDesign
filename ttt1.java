@@ -3,12 +3,12 @@ interface person1
 {
     boolean type(displayer d,checker m);
 }
-interface checker1
+/*interface checker1
 {
     void whowins(displayer d);
 
     boolean completed(int p,displayer d);
-}
+}*/
 interface displayer1
 {
     void create();
@@ -18,17 +18,17 @@ class displayer implements displayer1
 {
 
     int[][] bd;
-    int n;
-    int[] r;
-    int[] c;
+    int n,k;
+    
     Scanner s=new Scanner(System.in);
     public void create()
     {
-        System.out.println("enter the size of square block");
+        System.out.println("enter the size of square block of every tictactoe");
+        k=s.nextInt();
+        System.out.println("enter the total size of square block"+"multiples of "+k);
         n=s.nextInt();
         bd=new int[n][n];
-        r=new int[n];
-        c=new int[n];
+       
     }
     public void display()
     {
@@ -47,6 +47,7 @@ class person implements person1
     Scanner s=new Scanner(System.in);
     public boolean type(displayer d,checker m)
     {
+        //System.out.println("helo");
         int x=s.nextInt();
         int y=s.nextInt();
         if(x<0||y<0||x>=d.n||y>=d.n)
@@ -61,69 +62,94 @@ class person implements person1
 
         }
         d.bd[x][y]=m.z;
-        d.r[x]+=m.z;
-        d.c[y]+=m.z;
+        
+        //count++;
         return true;
 
 
     }
 
 }
-class checker implements checker1
+class checker //implements checker1
 {
     int  z=1;
     boolean comp=false;
-
-    public boolean completed(int p,displayer d)
+    
+    public boolean completed(int p,int i,int j,int[][] b,int kk)
     {
-        int k=d.n;
-        for(int i=0;i<k;i++)
+        //return ((b[i][j]+b[i][j+1]+b[i][j+2]==p*3)||(b[i+1][j+0]+b[i+1][j+1]+b[i+1][j+2]==p*3)|| (b[i+2][j+0]+b[i+2][j+1]+b[i+2][j+2]==p*3) || (b[i+0][j+0]+b[i+1][j+0]+b[i+2][j+0]==p*3)|| (b[i+0][j+1]+b[i+1][j+1]+b[i+2][j+1]==p*3)|| (b[i+0][j+2]+b[i+1][j+2]+b[i+2][j+2]==p*3)|| (b[i+0][j+0]+b[i+1][j+1]+b[i+2][j+2]==p*3)|| (b[i+2][j+0]+b[i+1][j+1]+b[i+0][j+2]==p*3));
+         for(i=0;i<kk;i++)
+         {
+             int x=0;
+             for(j=0;j<kk;j++)
+             {
+                 x+=b[i][j];
+             }
+             if(x==p*kk)
+             return true;
+         }
+         for(i=0;i<kk;i++)
+         {
+             int x=0;
+             for(j=0;j<kk;j++)
+             {
+                 x+=b[j][i];
+             }
+             if(x==p*kk)
+             return true;
+         }
+         return false;
+    }
+    public int check1(int i,int j,int[][] b,int kk)
+    {
+        if(completed(1,i,j,b,kk))
+        return 1;
+        else  if(completed(-1,i,j,b,kk))
+        return -1;
+        else return 0;
+        
+    }
+    public int check(int n,int[][] b,int kk)
+    {
+        if(n==kk)
         {
-            if(d.r[i]==p*k)
-                return true;
+            return check1(0,0,b,kk);
+            
         }
-        for(int i=0;i<k;i++)
-        {
-            if(d.c[i]==p*k)
-                return true;
-        }
-        int cx=0;
-        for(int i=0;i<k;i++)
-        {
-            if(d.bd[i][i]==p)
-                cx++;
-        }
-        if(cx==k)
-            return true;
-        cx=0;
-        for(int i=0;i<k;i++)
-        {
-            if(d.bd[i][k-1-i]==p)
-                cx++;
-        }
-        if(cx==k)
-            return true;
-
-        return false;
+        
+        int[][] ex=new int[n/kk][n/kk];
+         for(int i=0;i<n;i=i+kk)
+         {
+             for(int j=0;j<n;j=j+kk)
+             {
+                ex[i/kk][j/kk]=check1(i,j,b,kk); 
+             }
+             
+         }
+         return check(n/kk,ex,kk);
     }
 
     public void whowins(displayer d)
     {
-        if(completed(1,d))
+       // System.out.println(d.n);
+        int x=check(d.n,d.bd,d.k);
+        if(x==1)
         {
             System.out.println("A WINS");
             comp=true;
         }
-        else if(completed(-1,d))
+        else if(x==-1)
         {
             System.out.println("B WINS");
             comp=true;
         }
         else
         {
-            if(comp)
+            
+            if(Main.count==d.n*d.n)
             {
-                System.out.println("TIE");
+                System.out.println("TIE"+d.n);
+                comp=true;
             }
 
         }
@@ -143,8 +169,7 @@ class compu implements person1
             y=r.nextInt(k);
         }while(d.bd[x][y]!=0);
         d.bd[x][y]=-1;
-        d.r[x]+=-1;
-        d.c[y]+=-1;
+        
         System.out.println("computer choose "+x+" "+y);
         return true;
     }
@@ -152,6 +177,7 @@ class compu implements person1
 }
 public class Main
 {
+    static int count=0;
     public static void main(String args[])
     {
         System.out.println("WHATS YOUR UPTO BUDDY::");
@@ -161,9 +187,9 @@ public class Main
         int q=s.nextInt();
         displayer d=new displayer();
         d.create();
-
+        
         checker m=new checker();
-
+        
         person a=new person();
         person1 b;
         if(q==1)
@@ -175,21 +201,29 @@ public class Main
             b=new compu();
         }
         int x,y;
+        //System.out.println("helo");
         while(!m.comp)
         {
+            //System.out.println("helo");
             if(m.z==1)
             {
                 System.out.println("persom a turn");
-
+               
                 if(a.type(d,m))
-                    m.z=-1;
+                   {
+                       m.z=-1;
+                       count++;
+                   }
 
             }
             else
             {
                 System.out.println("person b turn");
                 if(b.type(d,m))
-                    m.z=1;
+                   { 
+                       m.z=1;
+                       count++;
+                   }
 
             }
             d.display();
