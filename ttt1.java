@@ -3,17 +3,72 @@ interface person1
 {
     boolean type(displayer d,checker m);
 }
-/*interface checker1
+interface checker1
 {
     void whowins(displayer d);
 
-    boolean completed(int p,displayer d);
-}*/
+    boolean completed(int p,int i,int j,int[][] b,int kk);
+}
 interface displayer1
 {
     void create();
     void display();
 }
+class astack
+{
+    int arr[];
+    int top, size, len;
+    
+    public astack(int n)
+    {
+        size = n;
+        len = 0;
+        arr = new int[size];
+        top = -1;
+    }
+   
+    public boolean isEmpty()
+    {
+        return top == -1;
+    }
+    
+    public boolean isFull()
+    {
+        return top == size -1 ;        
+    }
+
+    public int getSize()
+    {
+        return len ;
+    }
+
+    
+    public void push(int i,int j)
+    {
+        if(top + 1 >= size)
+            throw new IndexOutOfBoundsException("Overflow Exception");
+        if(top + 1 < size )
+            arr[++top] = i;
+        len++ ;
+        if(top + 1 >= size)
+            throw new IndexOutOfBoundsException("Overflow Exception");
+        if(top + 1 < size )
+            arr[++top] = j;
+        len++ ;
+    }
+   
+    public int pop()
+    {
+        if( isEmpty() )
+            throw new NoSuchElementException("Underflow Exception");
+        len-- ;
+        return arr[top--]; 
+         
+    }    
+
+    
+}
+ 
 class displayer implements displayer1
 {
 
@@ -27,6 +82,7 @@ class displayer implements displayer1
         k=s.nextInt();
         System.out.println("enter the total size of square block"+"multiples of "+k);
         n=s.nextInt();
+        Main.as=new astack(n*n*2);
         bd=new int[n][n];
        
     }
@@ -61,6 +117,7 @@ class person implements person1
             return false;
 
         }
+        Main.as.push(x,y);
         d.bd[x][y]=m.z;
         
         //count++;
@@ -70,7 +127,7 @@ class person implements person1
     }
 
 }
-class checker //implements checker1
+class checker implements checker1
 {
     int  z=1;
     boolean comp=false;
@@ -169,7 +226,7 @@ class compu implements person1
             y=r.nextInt(k);
         }while(d.bd[x][y]!=0);
         d.bd[x][y]=-1;
-        
+        Main.as.push(x,y);
         System.out.println("computer choose "+x+" "+y);
         return true;
     }
@@ -178,6 +235,7 @@ class compu implements person1
 public class Main
 {
     static int count=0;
+    static astack as;
     public static void main(String args[])
     {
         System.out.println("WHATS YOUR UPTO BUDDY::");
@@ -201,6 +259,7 @@ public class Main
             b=new compu();
         }
         int x,y;
+        int aa,bb;
         //System.out.println("helo");
         while(!m.comp)
         {
@@ -208,12 +267,25 @@ public class Main
             if(m.z==1)
             {
                 System.out.println("persom a turn");
-               
+                System.out.println("IF U WANT TO UNDO CHANGES press 1 else 2");
+                int xx=s.nextInt();
+                if(xx==1)
+                {
+                    bb=as.pop();
+                    aa=as.pop();
+                    d.bd[aa][bb]=0;
+                    bb=as.pop();
+                    aa=as.pop();
+                    d.bd[aa][bb]=0;
+                }
+                else{
+                    System.out.println("persom a turn");
                 if(a.type(d,m))
                    {
                        m.z=-1;
                        count++;
                    }
+                }
 
             }
             else
