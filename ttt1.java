@@ -1,307 +1,525 @@
 import java.util.*;
-interface person1
-{
-    boolean type(displayer d,checker m);
-}
-interface checker1
-{
-    void whowins(displayer d);
-
-    boolean completed(int p,int i,int j,int[][] b,int kk);
-}
-interface displayer1
-{
+interface manager{
     void create();
     void display();
+    void undo();
+    boolean check(int x,int y);
 }
-class astack
-{
+interface human {
+    //int x=0,y=0;
+    void type(sqmanager m);
+}
+interface human1{
+    void type(hexmanager m);
+}
+interface god{
+
+    void whowins(sqmanager m);
+}
+interface god1 {
+
+    void whowins(hexmanager m);
+}
+class astack {
     int arr[];
     int top, size, len;
-    
-    public astack(int n)
-    {
+    public astack(int n) {
         size = n;
         len = 0;
         arr = new int[size];
         top = -1;
     }
-   
-    public boolean isEmpty()
-    {
-        return top == -1;
-    }
-    
-    public boolean isFull()
-    {
-        return top == size -1 ;        
-    }
-
-    public int getSize()
-    {
-        return len ;
-    }
-
-    
-    public void push(int i,int j)
-    {
-        if(top + 1 >= size)
-            throw new IndexOutOfBoundsException("Overflow Exception");
+    public void push(int i,int j) {
         if(top + 1 < size )
             arr[++top] = i;
         len++ ;
-        if(top + 1 >= size)
-            throw new IndexOutOfBoundsException("Overflow Exception");
         if(top + 1 < size )
             arr[++top] = j;
         len++ ;
     }
-   
-    public int pop()
-    {
-        if( isEmpty() )
-            throw new NoSuchElementException("Underflow Exception");
+    public int pop() {
         len-- ;
-        return arr[top--]; 
-         
-    }    
-
-    
-}
- 
-class displayer implements displayer1
-{
-
-    int[][] bd;
-    int n,k;
-    
-    Scanner s=new Scanner(System.in);
-    public void create()
-    {
-        System.out.println("enter the size of square block of every tictactoe");
-        k=s.nextInt();
-        System.out.println("enter the total size of square block"+"multiples of "+k);
-        n=s.nextInt();
-        Main.as=new astack(n*n*2);
-        bd=new int[n][n];
-       
-    }
-    public void display()
-    {
-        for(int i=0;i<n;i++)
-        {
-            for(int j=0;j<n;j++)
-                System.out.print(bd[i][j]+" ");
-            System.out.println("");
-        }
-
+        return arr[top--];
 
     }
 }
-class person implements person1
-{
-    Scanner s=new Scanner(System.in);
-    public boolean type(displayer d,checker m)
-    {
-        //System.out.println("helo");
-        int x=s.nextInt();
-        int y=s.nextInt();
-        if(x<0||y<0||x>=d.n||y>=d.n)
-        {
-            System.out.println("not a valid position");
-            return false;
+class sqjudge implements god {
+    public boolean over(int p, int i, int j, int[][] b, int kk) {
+        for (i = 0; i < kk; i++) {
+            int x = 0;
+            for (j = 0; j < kk; j++) {
+                x += b[i][j];
+            }
+            if (x == p * kk)
+                return true;
         }
-        if(d.bd[x][y]!=0)
-        {
-            System.out.println("already filled..chose another position");
-            return false;
-
+        for (i = 0; i < kk; i++) {
+            int x = 0;
+            for (j = 0; j < kk; j++) {
+                x += b[j][i];
+            }
+            if (x == p * kk)
+                return true;
         }
-        Main.as.push(x,y);
-        d.bd[x][y]=m.z;
-        
-        //count++;
-        return true;
-
-
+        return false;
     }
-
-}
-class checker implements checker1
-{
-    int  z=1;
-    boolean comp=false;
-    
-    public boolean completed(int p,int i,int j,int[][] b,int kk)
-    {
-        //return ((b[i][j]+b[i][j+1]+b[i][j+2]==p*3)||(b[i+1][j+0]+b[i+1][j+1]+b[i+1][j+2]==p*3)|| (b[i+2][j+0]+b[i+2][j+1]+b[i+2][j+2]==p*3) || (b[i+0][j+0]+b[i+1][j+0]+b[i+2][j+0]==p*3)|| (b[i+0][j+1]+b[i+1][j+1]+b[i+2][j+1]==p*3)|| (b[i+0][j+2]+b[i+1][j+2]+b[i+2][j+2]==p*3)|| (b[i+0][j+0]+b[i+1][j+1]+b[i+2][j+2]==p*3)|| (b[i+2][j+0]+b[i+1][j+1]+b[i+0][j+2]==p*3));
-         for(i=0;i<kk;i++)
-         {
-             int x=0;
-             for(j=0;j<kk;j++)
-             {
-                 x+=b[i][j];
-             }
-             if(x==p*kk)
-             return true;
-         }
-         for(i=0;i<kk;i++)
-         {
-             int x=0;
-             for(j=0;j<kk;j++)
-             {
-                 x+=b[j][i];
-             }
-             if(x==p*kk)
-             return true;
-         }
-         return false;
-    }
-    public int check1(int i,int j,int[][] b,int kk)
-    {
-        if(completed(1,i,j,b,kk))
-        return 1;
-        else  if(completed(-1,i,j,b,kk))
-        return -1;
+    public int c1(int i, int j, int[][] b, int kk) {
+        if (over(1, i, j, b, kk))
+            return 1;
+        else if (over(-1, i, j, b, kk))
+            return -1;
         else return 0;
-        
     }
-    public int check(int n,int[][] b,int kk)
-    {
-        if(n==kk)
-        {
-            return check1(0,0,b,kk);
-            
+    public int verify(int n, int[][] b, int kk) {
+        if (n == kk) {
+            return c1(0, 0, b, kk);
         }
-        
-        int[][] ex=new int[n/kk][n/kk];
-         for(int i=0;i<n;i=i+kk)
-         {
-             for(int j=0;j<n;j=j+kk)
-             {
-                ex[i/kk][j/kk]=check1(i,j,b,kk); 
-             }
-             
-         }
-         return check(n/kk,ex,kk);
-    }
 
-    public void whowins(displayer d)
+        int[][] ex = new int[n / kk][n / kk];
+        for (int i = 0; i < n; i = i + kk) {
+            for (int j = 0; j < n; j = j + kk) {
+                ex[i / kk][j / kk] = c1(i, j, b, kk);
+            }
+
+        }
+        return verify(n / kk, ex, kk);
+    }
+    public void whowins(sqmanager m) {
+        int ans = verify(m.total_size, m.board, m.size_of_each);
+        if (ans == 1) {
+            System.out.println("a wins");
+            m.completed = true;
+        } else if (ans== -1) {
+            System.out.println("b wins");
+            m.completed = true;
+        } else {
+            if (m.count == m.row_size * m.col_size) {
+                System.out.println("TIE ");
+                m.completed = true;
+            }
+        }
+    }
+}
+class hexjudge implements god1{
+
+    public int verify(int n,int[][] bd,int xx,int yy) {
+        int aa = xx, bb = yy, p = bd[aa][bb], l = 0;
+            while (aa >= 0 && bb >= 0 && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+            l++;
+            aa = aa - 2;
+            bb = bb - 2;
+            }
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            while (aa < (2 * n - 1) && bb < (4 * n - 3) && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+                l++;
+                aa = aa + 2;
+                bb = bb + 2;
+            }
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            int d1 = 0;
+            l--;
+            aa = xx;
+            bb = yy;
+            while (aa >= 0 && bb < 4 * n - 3 && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+                d1++;
+                aa = aa - 1;
+                bb = bb + 1;
+            }
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            while (aa < 2 * n - 1 && bb >= 0 && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+                d1++;
+                aa = aa + 1;
+                bb = bb - 1;
+            }
+            d1--;
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            int d2 = 0;
+            aa = xx;
+            bb = yy;
+            while (aa < 2 * n - 1 && bb < 4 * n - 3 && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+                d2++;
+                aa = aa + 1;
+                bb = bb + 1;
+            }
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            while (aa >= 0 && bb >= 0 && bd[aa][bb] != -2 && bd[aa][bb] == p) {
+                d2++;
+                aa = aa - 1;
+                bb = bb - 1;
+            }
+            d2--;
+            aa = xx;
+            bb = yy;
+            p = bd[aa][bb];
+            System.out.println(l + " " + d1 + " " + d2);
+            if (l >= n || d1 >= n || d2 >= n)
+                return p;
+            else
+                return 0;
+        }
+
+    public void whowins(hexmanager d)
     {
-       // System.out.println(d.n);
-        int x=check(d.n,d.bd,d.k);
-        if(x==1)
+        int y=Main.stack.pop();
+        int x=Main.stack.pop();
+        Main.stack.push(x,y);
+        int ax=verify(d.total_size,d.board,x,y);
+        if(ax==1)
         {
             System.out.println("A WINS");
-            comp=true;
+            d.completed=true;
         }
-        else if(x==-1)
+        else if(ax==-1)
         {
             System.out.println("B WINS");
-            comp=true;
+            d.completed=true;
         }
         else
         {
-            
-            if(Main.count==d.n*d.n)
+            if(d.count==3*d.total_size*d.total_size-3*d.total_size+1)
             {
-                System.out.println("TIE"+d.n);
-                comp=true;
+                System.out.println("TIE");
+                d.completed=true;
             }
 
         }
     }
-
 }
-
-class compu implements person1
-{
+class computer implements human{
     Random r=new Random();
-
-    public boolean type(displayer d,checker m)
-    {
-        int x,y,k=d.n;
+    int x,y;
+    public void type(sqmanager m){
         do{
-            x=r.nextInt(k);
-            y=r.nextInt(k);
-        }while(d.bd[x][y]!=0);
-        d.bd[x][y]=-1;
-        Main.as.push(x,y);
-        System.out.println("computer choose "+x+" "+y);
-        return true;
+            int number=r.nextInt(3*m.total_size*m.total_size-3*m.total_size+1);
+            for(int i=0;i<m.row_size;i++){
+                for(int j=0;j<m.col_size;j++){
+                    if(m.board[i][j]==number){
+                        x=i;
+                        y=j;
+                        break;
+                    }
+                }
+            }
+        }while(!m.check(x,y));
+        m.board[x][y]=-1;
+        Main.stack.push(x,y);
+    }
+}
+class hexcomputer implements human1{
+    Random r=new Random();
+    int x,y;
+    public void type(hexmanager m){
+        do{
+            int number=r.nextInt(3*m.total_size*m.total_size-3*m.total_size+1);
+            for(int i=0;i<m.row_size;i++){
+                for(int j=0;j<m.col_size;j++){
+                    if(m.board[i][j]==number){
+                        x=i;
+                        y=j;
+                        break;
+                    }
+
+                }
+            }
+        }while(!m.check(x,y));
+        m.board[x][y]=-1;
+        Main.stack.push(x,y);
+    }
+}
+class person implements human{
+    Scanner s=new Scanner(System.in);
+    int x,y;
+    public void type(sqmanager m){
+        do{
+            System.out.println("select the number where you want to insert");
+            int number=s.nextInt();
+
+            for(int i=0;i<m.row_size;i++){
+                for(int j=0;j<m.col_size;j++){
+                    if(m.board[i][j]==number){
+                        x=i;
+                        y=j;
+                        break;
+                    }
+                }
+            }
+        }while(!m.check(x,y));
+        m.board[x][y]=m.chance;
+        Main.stack.push(x,y);
+    }
+}
+class hexperson implements human1{
+    Scanner s=new Scanner(System.in);
+    int x,y;
+    public void type(hexmanager m){
+        do{
+            System.out.println("select the number where you want to insert");
+            int number=s.nextInt();
+
+            for(int i=0;i<m.row_size;i++){
+                for(int j=0;j<m.col_size;j++){
+                    if(m.board[i][j]==number){
+                        x=i;
+                        y=j;
+                        break;
+                    }
+
+                }
+            }
+        }while(!m.check(x,y));
+        m.board[x][y]=m.chance;
+        Main.stack.push(x,y);
+    }
+}
+class sqmanager implements manager{
+    int[][] board;
+    int size_of_each,total_size,row_size,col_size;
+    boolean completed;
+    int chance=1,count;
+    Scanner s=new Scanner(System.in);
+    public void create(){
+        System.out.println("enter the size of square block of each tic-tac-toe");
+        size_of_each=s.nextInt();
+        System.out.println("enter the total size of square block");
+        total_size=s.nextInt();
+        board=new int[total_size][total_size];
+        row_size=total_size;
+        col_size=total_size;
+        Main.stack=new astack(total_size*total_size*2);
+        int num=3;
+        for(int i=0;i<row_size;i++){
+            for(int j=0;j<col_size;j++){
+                board[i][j]=num;
+                num++;
+            }
+        }
+    }
+    public void display(){
+        for(int i=0;i<row_size;i++){
+            for(int j=0;j<col_size;j++)
+                if(board[i][j]==1)
+                    System.out.print("X ");
+                else if(board[i][j]==-1)
+                    System.out.print("O ");
+                else if(board[i][j]!=0)
+                    System.out.print(board[i][j]+" ");
+                else
+                    System.out.print("  ");
+            System.out.println("");
+        }
+    }
+    public void undo(){
+        System.out.println("do u want to undo changes, if yes press 1 else 2");
+        int ans=s.nextInt();
+        if(ans==1){
+            int y=Main.stack.pop();
+            int x=Main.stack.pop();
+            board[x][y]=0;
+            y=Main.stack.pop();
+            x=Main.stack.pop();
+            board[x][y]=0;
+        }
+    }
+    public boolean check(int x,int y){
+        if(board[x][y]==1||board[x][y]==-1) {
+            System.out.println("already choosen , take another number");
+            return false;
+        }else {
+            return true;
+        }
+    }
+}
+class hexmanager implements manager{
+    int[][] board;
+    int[][] std_board;
+    int total_size,row_size,col_size;
+    boolean completed=false;
+    int chance=1,count;
+    Scanner s=new Scanner(System.in);
+    public void create(){
+        System.out.println("enter the length of size of hexogon");
+        total_size=s.nextInt();
+        board=new int[2*total_size-1][4*total_size-3];
+        std_board=new int[2*total_size-1][4*total_size-3];
+        int al=-1,index=0;
+        Main.stack=new astack(2*total_size*total_size*total_size);
+        for(int i=0;i<2*total_size-1;i++){
+            if(i<total_size) {
+                index = 0;
+                al = -1;
+                for (int j = 0; j < 4 * total_size - 3; j++) {
+                    if ((j < Math.abs(total_size - i - 1)) || (j >= Math.abs(3 * total_size - 2 + i))) {
+                        board[i][j] = -2;
+                    } else if (al == -1) {
+                        al = 0;
+                        index = j;
+                    }
+                }
+                index++;
+                while (index < 4 * total_size - 3) {
+                    board[i][index] = -2;
+                    index += 2;
+                }
+            }else{
+                for(int j=0;j<4*total_size-3;j++){
+                    board[i][j]=board[2*total_size-2-i][j];
+                }
+            }
+        }
+        int b=3;
+        for(int i=0;i<2*total_size-1;i++){
+            for(int j=0;j<4*total_size-3;j++){
+                if(board[i][j]!=-2){
+                    board[i][j]=b;
+                    b++;
+                }
+            }
+        }
+        for(int i=0;i<2*total_size-1;i++){
+            for(int j=0;j<4*total_size-3;j++){
+                std_board[i][j]=board[i][j];
+            }
+        }
+        row_size=2*total_size-1;
+        col_size=4*total_size-3;
     }
 
+    public void display(){
+        for(int i=0;i<2*total_size-1;i++){
+            for(int j=0;j<4*total_size-3;j++){
+                if(board[i][j]!=-2)
+                    System.out.print(board[i][j]);
+                else
+                    System.out.print(" ");
+
+            }
+            System.out.println("");
+        }
+    }
+    public void undo(){
+        System.out.println("do u want to undo changes, if yes press 1 else 2");
+        int ans=s.nextInt();
+        if(ans==1){
+            int y=Main.stack.pop();
+            int x=Main.stack.pop();
+            board[x][y]=0;
+            y=Main.stack.pop();
+            x=Main.stack.pop();
+            board[x][y]=0;
+        }
+    }
+    public boolean check(int x, int y){
+        if(board[x][y]==1||board[x][y]==-1) {
+            System.out.println("already choosen , take another number");
+            return false;
+        }else {
+            return true;
+        }
+    }
 }
-public class Main
-{
-    static int count=0;
-    static astack as;
-    public static void main(String args[])
-    {
-        System.out.println("WHATS YOUR UPTO BUDDY::");
-        System.out.println("1. GAME BETWEEN TWO HUMANS");
-        System.out.println("2. GAME BETWEEN COMPUTER");
+public class Main {
+    static astack stack;
+    public static void sqtictactoe(){
         Scanner s=new Scanner(System.in);
-        int q=s.nextInt();
-        displayer d=new displayer();
-        d.create();
-        
-        checker m=new checker();
-        
-        person a=new person();
-        person1 b;
-        if(q==1)
-        {
+        sqmanager g=new sqmanager();
+        sqjudge jud=new sqjudge();
+        g.create();
+        g.display();
+        System.out.println("whats your upto buddy");
+        System.out.println("1 . game between two humans");
+        System.out.println("2 . game between human and computer");
+        int choice1=s.nextInt();
+        human a=new person();
+        human b;
+        if(choice1==1)
             b=new person();
-        }
         else
-        {
-            b=new compu();
+            b=new computer();
+        while(!g.completed){
+            if(g.chance==1){
+                System.out.println("person a's turn");
+                g.undo();
+                System.out.println("choose any number");
+                a.type(g);
+                g.chance=-1;
+                g.count++;
+
+            }else{
+                System.out.println("person b's turn");
+                if(choice1==1) {
+                    g.undo();
+                }
+                b.type(g);
+                g.chance=1;
+                g.count++;
+            }
+            g.display();
+            jud.whowins(g);
+
         }
-        int x,y;
-        int aa,bb;
-        //System.out.println("helo");
-        while(!m.comp)
-        {
-            //System.out.println("helo");
-            if(m.z==1)
-            {
-                System.out.println("persom a turn");
-                System.out.println("IF U WANT TO UNDO CHANGES press 1 else 2");
-                int xx=s.nextInt();
-                if(xx==1)
-                {
-                    bb=as.pop();
-                    aa=as.pop();
-                    d.bd[aa][bb]=0;
-                    bb=as.pop();
-                    aa=as.pop();
-                    d.bd[aa][bb]=0;
+    }
+    public static void hextictactoe(){
+        Scanner s=new Scanner(System.in);
+        hexmanager  g=new hexmanager();
+        hexjudge    jud=new hexjudge();
+        g.create();
+        System.out.println("hello");
+        g.display();
+        System.out.println("whats your upto buddy");
+        System.out.println("1 . game between two humans");
+        System.out.println("2 . game between human and computer");
+        int choice1=s.nextInt();
+        hexperson a=new hexperson();
+        human1 b;
+
+        if(choice1==1)
+            b=new hexperson();
+        else
+            b=new hexcomputer();
+        while(!g.completed){
+            if(g.chance==1){
+                System.out.println("person a's turn");
+                g.undo();
+                System.out.println("choose any number");
+                a.type(g);
+                g.chance=-1;
+                g.count++;
+            }else{
+                System.out.println("person b's turn");
+                if(choice1==1) {
+                    g.undo();
                 }
-                else{
-                    System.out.println("persom a turn");
-                if(a.type(d,m))
-                   {
-                       m.z=-1;
-                       count++;
-                   }
-                }
 
+                b.type(g);
+                g.chance=1;
+                g.count++;
             }
-            else
-            {
-                System.out.println("person b turn");
-                if(b.type(d,m))
-                   { 
-                       m.z=1;
-                       count++;
-                   }
+            g.display();
+            jud.whowins(g);
 
-            }
-            d.display();
-            m.whowins(d);
+        }
+    }
+    public static void main(String[] args) {
+        System.out.println("type of game you want to play");
+        System.out.println("1 . square tic-tac-toe");
+        System.out.println("2 . hexogonal tic-tac-toe");
+        Scanner s=new Scanner(System.in);
+        int choice=s.nextInt();
 
-
+        if(choice==1){
+            sqtictactoe();
+        }else{
+            hextictactoe();
         }
 
     }
